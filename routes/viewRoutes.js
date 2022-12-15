@@ -1,0 +1,48 @@
+const express = require('express');
+const viewsController = require('../controllers/viewsController');
+const authController = require('../controllers/authController');
+const bookingController = require('../controllers/bookingController');
+
+const router = express.Router();
+
+// router.get('/', (req, res) => {
+//   res.status(200).render('base');
+// });
+// router.get('/overview', (req, res) => {
+//   res.status(200).render('overview', {
+//     title: 'All Tours',
+//   });
+// });
+// router.get('/tour', (req, res) => {
+//   res.status(200).render('tour', {
+//     title: 'The Forest Hiker Tour',
+//   });
+// });
+router.use(authController.isLoggedIn);
+
+router.get('/', viewsController.getOverview);
+router.get('/tour', viewsController.getTour);
+
+router.get(
+  '/',
+  bookingController.createBooking,
+  authController.isLoggedIn,
+  viewsController.getOverview
+);
+router.get('/tour/:slug', authController.isLoggedIn, viewsController.getTour);
+router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
+router.get('/me', authController.protect, viewsController.getAccount);
+router.get(
+  '/my-tours',
+  bookingController.createBookingCheckout,
+  authController.protect,
+  viewsController.getMyTours
+);
+
+router.post(
+  '/submit-user-data',
+  authController.protect,
+  viewsController.updateUserData
+);
+
+module.exports = router;
